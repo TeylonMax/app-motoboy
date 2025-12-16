@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MotoCash - Dashboard</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h6 class="text-secondary m-0">Olá, {{ nome }}</h6>
+            <div class="d-flex align-items-center gap-2">
+                <h4 class="fw-bold m-0">Visão Geral</h4>
+                <button onclick="alternarPrivacidade()" class="btn btn-sm btn-outline-secondary border-0 text-white" style="background: transparent;">
+                    <i id="icone-olho" class="fas fa-eye"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="d-flex align-items-center gap-2">
+            <div class="rounded-circle bg-secondary" style="width: 40px; height: 40px; overflow: hidden;">
+                <img src="https://cdn-icons-png.flaticon.com/512/3063/3063823.png" alt="Avatar" style="width: 100%;">
+            </div>
+            <a href="/logout" class="btn btn-dark rounded-circle" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" title="Sair da conta">
+                <i class="fas fa-sign-out-alt text-danger"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="card dashboard-card main-balance mb-4">
+        <div class="card-body p-4">
+            <small class="opacity-75">Saldo Líquido (Hoje)</small>
+            <h1 class="fw-bold mt-1 valor-mascara">R$ {{ "%.2f"|format(saldo_dia) }}</h1>
+            <div class="mt-3 d-flex align-items-center">
+                <i class="fas fa-calendar-alt me-2"></i>
+                <small>Faturamento Mês: <span class="valor-mascara">R$ {{ "%.2f"|format(fat_mes) }}</span></small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6">
+            <div class="card dashboard-card p-3">
+                <div class="icon-circle bg-icon-green">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <small class="text-secondary">Entradas</small>
+                <h5 class="fw-bold text-white mb-0 valor-mascara">R$ {{ "%.2f"|format(fat_dia) }}</h5>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card dashboard-card p-3">
+                <div class="icon-circle bg-icon-red">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+                <small class="text-secondary">Saídas</small>
+                <h5 class="fw-bold text-white mb-0 valor-mascara">R$ {{ "%.2f"|format(gasto_dia) }}</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="card dashboard-card mb-4">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3" style="font-size: 1rem;">Performance (7 dias)</h5>
+            <div style="position: relative; height: 200px;">
+                <canvas id="graficoSemanal"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6">
+            <button class="btn btn-income btn-action w-100" data-bs-toggle="modal" data-bs-target="#modalGanho">
+                <i class="fas fa-plus me-2"></i> Ganhei
+            </button>
+        </div>
+        <div class="col-6">
+            <button class="btn btn-expense btn-action w-100" data-bs-toggle="modal" data-bs-target="#modalGasto">
+                <i class="fas fa-minus me-2"></i> Gastei
+            </button>
+        </div>
+    </div>
+
+    <h5 class="fw-bold mb-3">Histórico Recente</h5>
+    <div class="list-group pb-3">
+        {% if transacoes|length == 0 %}
+            <div class="text-center text-secondary py-3">
+                <small>Nenhuma atividade hoje.</small>
+            </div>
+        {% endif %}
+
+        {% for t in transacoes %}
+        <div class="transaction-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <div class="transaction-icon">
+                    {% if t['descricao'] == 'Gasolina' %} <i class="fas fa-gas-pump"></i>
+                    {% elif t['descricao'] == 'Alimentação' %} <i class="fas fa-hamburger"></i>
+                    {% elif t['descricao'] == 'Manutenção' %} <i class="fas fa-tools"></i>
+                    {% elif t['descricao'] == 'Óleo' %} <i class="fas fa-oil-can"></i>
+                    {% elif t['descricao'] == 'iFood' %} <i class="fas fa-utensils"></i>
+                    {% elif t['descricao'] == 'Uber' %} <i class="fas fa-motorcycle"></i>
+                    {% else %} <i class="fas fa-wallet"></i>
+                    {% endif %}
+                </div>
+                <div>
+                    <h6 class="mb-0">{{ t['descricao'] }}</h6>
+                    <small class="text-secondary">{{ t['data'] }}</small>
+                </div>
+            </div>
+            <span class="fw-bold {{ 'text-success' if t['tipo'] == 'entrada' else 'text-danger' }} valor-mascara">
+                {{ '+' if t['tipo'] == 'entrada' else '-' }} R$ {{ "%.2f"|format(t['valor']) }}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="modal fade" id="modalGanho" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title">Novo Ganho</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/adicionar" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="tipo" value="entrada">
+                    <div class="mb-3">
+                        <label class="text-secondary mb-1">Valor</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-white">R$</span>
+                            <input type="number" step="0.01" name="valor" class="form-control" placeholder="0.00" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-secondary mb-1">Origem</label>
+                        <select name="descricao" class="form-select">
+                            <option value="iFood">iFood</option>
+                            <option value="Uber">Uber Moto</option>
+                            <option value="99Moto">99 Moto</option>
+                            <option value="Particular">Particular</option>
+                            <option value="Gorjeta">Gorjeta</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="submit" class="btn btn-income w-100 rounded-pill">Confirmar Entrada</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalGasto" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title text-danger">Novo Gasto</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/adicionar" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="tipo" value="saida">
+                    <div class="mb-3">
+                        <label class="text-secondary mb-1">Valor</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-white">R$</span>
+                            <input type="number" step="0.01" name="valor" class="form-control" placeholder="0.00" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-secondary mb-1">Motivo</label>
+                        <select name="descricao" class="form-select">
+                            <option value="Gasolina">Gasolina</option>
+                            <option value="Alimentação">Alimentação</option>
+                            <option value="Óleo">Troca de Óleo</option>
+                            <option value="Manutenção">Manutenção</option>
+                            <option value="Multa">Multa</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="submit" class="btn btn-expense w-100 rounded-pill">Confirmar Saída</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>

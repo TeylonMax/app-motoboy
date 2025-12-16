@@ -1,0 +1,101 @@
+:root {
+    --bg-dark: #1e1e2e;
+    --card-bg: #27293d;
+    --accent-green: #00f2c3;
+    --accent-red: #fd5d93;
+    --text-primary: #ffffff;
+    --text-secondary: #9a9a9a;
+}
+
+body {
+    background-color: var(--bg-dark);
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-primary);
+    padding-bottom: 80px;
+}
+
+/* Estilo dos Cards Principais */
+.dashboard-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    border: none;
+    transition: transform 0.2s;
+}
+
+.dashboard-card:active {
+    transform: scale(0.98);
+}
+
+.main-balance {
+    background: linear-gradient(45deg, #1d8cf8, #3358f4);
+    color: white;
+}
+
+.icon-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.bg-icon-green { background: rgba(0, 242, 195, 0.2); color: var(--accent-green); }
+.bg-icon-red { background: rgba(253, 93, 147, 0.2); color: var(--accent-red); }
+
+/* Lista de Transações */
+.transaction-item {
+    background-color: var(--card-bg);
+    border-radius: 15px;
+    margin-bottom: 10px;
+    border: none;
+    color: white;
+    padding: 15px;
+}
+
+.transaction-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #34364a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: var(--text-secondary);
+}
+
+/* Botões de Ação */
+.btn-action {
+    border-radius: 50px;
+    padding: 15px;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.btn-income { background: var(--accent-green); color: #1e1e2e; }
+.btn-expense { background: var(--accent-red); color: white; }
+
+/* Modais e Formulários */
+.modal-content {
+    background-color: var(--card-bg);
+    color: white;
+    border-radius: 20px;
+}
+.form-control, .form-select {
+    background-color: #1e1e2e;
+    border: 1px solid #2b3553;
+    color: white;
+    border-radius: 10px;
+    padding: 12px;
+}
+.form-control:focus, .form-select:focus {
+    background-color: #1e1e2e;
+    color: white;
+    box-shadow: none;
+    border-color: #1d8cf8;
+}
