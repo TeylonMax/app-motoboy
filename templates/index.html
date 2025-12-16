@@ -3,87 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle Motoboy</title>
+    <title>Dashboard - MotoCash</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h1>Olá, {{ nome }}</h1>
-        <a href="{{ url_for('logout') }}" style="color: red;">Sair</a>
-    </div>
-
-    <div class="box">
-        <h3>🎯 Meta do Dia: R$ {{ meta }}</h3>
+    <div class="container py-4" style="max-width: 800px;">
         
-        <div class="barra-fundo">
-            <div class="barra-progresso" style="width: {{ largura_barra }}%;">
-                {{ porcentagem }}%
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <h2 class="fw-bold m-0">Olá, <span style="color: var(--accent-blue);">{{ nome }}</span></h2>
+            <a href="{{ url_for('logout') }}" class="text-danger fw-bold text-decoration-none">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </a>
+        </div>
+
+        <div class="box mb-4 p-4">
+            <div class="d-flex justify-content-between align-items-end mb-2">
+                <h4 class="m-0">🎯 Meta Diária</h4>
+                <span class="text-secondary">R$ {{ meta }}</span>
+            </div>
+            
+            <div class="barra-fundo mb-2">
+                <div class="barra-progresso d-flex align-items-center justify-content-end pe-2" style="width: {{ largura_barra }}%;">
+                    <small>{{ porcentagem }}%</small>
+                </div>
+            </div>
+            
+            <p class="text-secondary small mb-3">
+                {% if fat_dia < meta %}
+                    Faltam: <strong class="text-white">R$ {{ '%.2f'|format(meta - fat_dia) }}</strong>
+                {% else %}
+                    <span style="color: var(--accent-green);">Meta batida! 🚀</span>
+                {% endif %}
+            </p>
+
+            <form action="{{ url_for('definir_meta') }}" method="POST" class="d-flex gap-2">
+                <input type="number" name="meta" step="0.01" value="{{ meta }}" class="form-control" placeholder="Nova meta" required>
+                <button type="submit" class="btn btn-primary" style="min-width: 100px;">Salvar</button>
+            </form>
+        </div>
+
+        <div class="resumo row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card p-3 text-center h-100 d-flex flex-column justify-content-center">
+                    <h5 class="text-secondary fs-6">Ganho Hoje</h5>
+                    <h3 class="fw-bold" style="color: var(--accent-green);">
+                        R$ <span class="valor-mascara">{{ fat_dia }}</span>
+                    </h3>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card p-3 text-center h-100 d-flex flex-column justify-content-center">
+                    <h5 class="text-secondary fs-6">Gasto Hoje</h5>
+                    <h3 class="fw-bold" style="color: var(--accent-red);">
+                        R$ <span class="valor-mascara">{{ gasto_dia }}</span>
+                    </h3>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card p-3 text-center h-100 d-flex flex-column justify-content-center position-relative">
+                    <h5 class="text-secondary fs-6">Saldo Líquido</h5>
+                    <h3 class="fw-bold text-white">
+                        R$ <span class="valor-mascara">{{ saldo_dia }}</span>
+                    </h3>
+                    <i id="icone-olho" onclick="alternarPrivacidade()" class="fas fa-eye position-absolute top-0 end-0 m-3 text-secondary" style="cursor: pointer;"></i>
+                </div>
             </div>
         </div>
-        <p>Faltam: <strong>R$ {{ '%.2f'|format(meta - fat_dia) if fat_dia < meta else 0 }}</strong></p>
 
-        <form action="{{ url_for('definir_meta') }}" method="POST" style="margin-top: 10px;">
-            <label>Definir nova meta:</label>
-            <input type="number" name="meta" step="0.01" value="{{ meta }}" required>
-            <button type="submit">Salvar</button>
-        </form>
+        <div class="box mb-4 p-4">
+            <h4 class="mb-3"><i class="fas fa-chart-bar me-2"></i>Desempenho Semanal</h4>
+            <div style="height: 250px;">
+                <canvas id="graficoSemanal"></canvas>
+            </div>
+        </div>
+
+        <div class="box mb-4 p-4">
+            <h4 class="mb-3">➕ Adicionar Lançamento</h4>
+            <form action="{{ url_for('adicionar') }}" method="POST" class="row g-2">
+                <div class="col-4">
+                    <select name="tipo" class="form-control form-select" required>
+                        <option value="entrada">Ganho</option>
+                        <option value="saida">Gasto</option>
+                    </select>
+                </div>
+                <div class="col-5">
+                    <input type="text" name="descricao" class="form-control" placeholder="Ex: Entrega iFood" required>
+                </div>
+                <div class="col-3">
+                    <input type="number" name="valor" step="0.01" class="form-control" placeholder="R$" required>
+                </div>
+                <div class="col-12 mt-2">
+                    <button type="submit" class="btn btn-success w-100">ADICIONAR</button>
+                </div>
+            </form>
+        </div>
+
+        <h4 class="mb-3">Últimas Movimentações</h4>
+        <div class="table-responsive">
+            <table class="table table-borderless" style="color: var(--text-primary);">
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in transacoes %}
+                    <tr>
+                        <td>
+                            <span class="badge {{ 'bg-success' if t.tipo == 'entrada' else 'bg-danger' }} p-2">
+                                {{ 'Entrada' if t.tipo == 'entrada' else 'Saída' }}
+                            </span>
+                        </td>
+                        <td class="align-middle">{{ t.descricao }}</td>
+                        <td class="align-middle fw-bold" style="color: {{ 'var(--accent-green)' if t.tipo == 'entrada' else 'var(--accent-red)' }};">
+                            R$ <span class="valor-mascara">{{ t.valor }}</span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center py-4 text-secondary">
+                            Nenhuma movimentação hoje.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
     </div>
 
-    <div class="resumo">
-        <div class="card">
-            <h3>Ganho Hoje</h3>
-            <h2 class="entrada">R$ {{ fat_dia }}</h2>
-        </div>
-        <div class="card">
-            <h3>Gasto Hoje</h3>
-            <h2 class="saida">R$ {{ gasto_dia }}</h2>
-        </div>
-        <div class="card">
-            <h3>Saldo</h3>
-            <h2 style="color: blue;">R$ {{ saldo_dia }}</h2>
-        </div>
-    </div>
-
-    <div class="box">
-        <h3>Adicionar Novo Lançamento</h3>
-        <form action="{{ url_for('adicionar') }}" method="POST">
-            <select name="tipo" required>
-                <option value="entrada">Ganho (Entrada)</option>
-                <option value="saida">Gasto (Saída)</option>
-            </select>
-            <input type="text" name="descricao" placeholder="Descrição (ex: Ifood)" required>
-            <input type="number" name="valor" step="0.01" placeholder="Valor (R$)" required>
-            <button type="submit">Adicionar</button>
-        </form>
-    </div>
-
-    <h3>Últimas Movimentações</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Tipo</th>
-                <th>Descrição</th>
-                <th>Valor</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for t in transacoes %}
-            <tr>
-                <td class="{{ 'entrada' if t.tipo == 'entrada' else 'saida' }}">
-                    {{ 'Entrada' if t.tipo == 'entrada' else 'Saída' }}
-                </td>
-                <td>{{ t.descricao }}</td>
-                <td>R$ {{ t.valor }}</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="3" style="text-align: center;">Nenhuma movimentação hoje.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 </body>
 </html>
