@@ -3,157 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Motoboy</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-</head>
-<body class="bg-light">
-
-    <nav class="navbar navbar-dark bg-dark mb-3">
-        <div class="container-fluid">
-            <span class="navbar-brand mb-0 h1">Olá, {{ nome }}</span>
-            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Sair</a>
-        </div>
-    </nav>
-
-    <div class="container">
+    <title>Controle Motoboy</title>
+    <style>
+        /* Estilo Básico para organizar sem mudar tudo */
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .box { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+        .resumo { display: flex; gap: 20px; margin-bottom: 20px; }
+        .card { border: 1px solid #ddd; padding: 10px; flex: 1; text-align: center; }
+        .entrada { color: green; }
+        .saida { color: red; }
         
-        <div class="card mb-4 shadow-sm border-0">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="card-title m-0 fw-bold"><i class="bi bi-trophy-fill text-warning"></i> Meta do Dia</h5>
-                    <button class="btn btn-sm btn-outline-secondary rounded-pill" data-bs-toggle="modal" data-bs-target="#modalMeta">
-                        Meta: R$ {{ meta }} <i class="bi bi-pencil-square"></i>
-                    </button>
-                </div>
+        /* Estilo da Barra de Meta */
+        .barra-fundo { width: 100%; background-color: #e0e0e0; height: 25px; border-radius: 5px; margin-top: 5px; }
+        .barra-progresso { height: 100%; background-color: #4caf50; text-align: center; line-height: 25px; color: white; border-radius: 5px; transition: width 0.5s; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
 
-                <div class="progress" style="height: 25px;">
-                    <div class="progress-bar {{ cor_barra }} progress-bar-striped progress-bar-animated" 
-                         role="progressbar" 
-                         style="width: {{ largura_barra }}%;">
-                        <strong>{{ porcentagem }}%</strong>
-                    </div>
-                </div>
-                <div class="text-center mt-2">
-                    {% if fat_dia < meta %}
-                    <small class="text-muted">Faltam <b>R$ {{ '%.2f'|format(meta - fat_dia) }}</b> pra bater a meta!</small>
-                    {% else %}
-                    <small class="text-success fw-bold">Parabéns! Meta batida! 🎉</small>
-                    {% endif %}
-                </div>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>Olá, {{ nome }}</h1>
+        <a href="{{ url_for('logout') }}" style="color: red;">Sair</a>
+    </div>
+
+    <div class="box">
+        <h3>🎯 Meta do Dia: R$ {{ meta }}</h3>
+        
+        <div class="barra-fundo">
+            <div class="barra-progresso" style="width: {{ largura_barra }}%;">
+                {{ porcentagem }}%
             </div>
         </div>
+        <p>Faltam: <strong>R$ {{ '%.2f'|format(meta - fat_dia) if fat_dia < meta else 0 }}</strong></p>
 
-        <div class="row text-center mb-4">
-            <div class="col-4">
-                <div class="card shadow-sm border-success h-100">
-                    <div class="card-body p-2">
-                        <small class="text-muted">Ganho Hoje</small>
-                        <h5 class="text-success fw-bold">R$ {{ fat_dia }}</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="col-4">
-                <div class="card shadow-sm border-danger h-100">
-                    <div class="card-body p-2">
-                        <small class="text-muted">Gasto Hoje</small>
-                        <h5 class="text-danger fw-bold">R$ {{ gasto_dia }}</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="col-4">
-                <div class="card shadow-sm border-primary h-100">
-                    <div class="card-body p-2">
-                        <small class="text-muted">Saldo</small>
-                        <h5 class="text-primary fw-bold">R$ {{ saldo_dia }}</h5>
-                    </div>
-                </div>
-            </div>
+        <form action="{{ url_for('definir_meta') }}" method="POST" style="margin-top: 10px;">
+            <label>Definir nova meta:</label>
+            <input type="number" name="meta" step="0.01" value="{{ meta }}" required>
+            <button type="submit">Salvar</button>
+        </form>
+    </div>
+
+    <div class="resumo">
+        <div class="card">
+            <h3>Ganho Hoje</h3>
+            <h2 class="entrada">R$ {{ fat_dia }}</h2>
         </div>
-
-        <div class="d-grid gap-2 mb-4">
-            <button class="btn btn-primary btn-lg shadow" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
-                <i class="bi bi-plus-circle"></i> Adicionar Corrida ou Gasto
-            </button>
+        <div class="card">
+            <h3>Gasto Hoje</h3>
+            <h2 class="saida">R$ {{ gasto_dia }}</h2>
         </div>
+        <div class="card">
+            <h3>Saldo</h3>
+            <h2 style="color: blue;">R$ {{ saldo_dia }}</h2>
+        </div>
+    </div>
 
-        <h6 class="text-muted border-bottom pb-2">Últimas Movimentações</h6>
-        <div class="list-group shadow-sm mb-5">
+    <div class="box">
+        <h3>Adicionar Novo Lançamento</h3>
+        <form action="{{ url_for('adicionar') }}" method="POST">
+            <select name="tipo" required>
+                <option value="entrada">Ganho (Entrada)</option>
+                <option value="saida">Gasto (Saída)</option>
+            </select>
+            <input type="text" name="descricao" placeholder="Descrição (ex: Ifood)" required>
+            <input type="number" name="valor" step="0.01" placeholder="Valor (R$)" required>
+            <button type="submit">Adicionar</button>
+        </form>
+    </div>
+
+    <h3>Últimas Movimentações</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Descrição</th>
+                <th>Valor</th>
+            </tr>
+        </thead>
+        <tbody>
             {% for t in transacoes %}
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    {% if t.tipo == 'entrada' %}
-                        <i class="bi bi-arrow-up-circle-fill text-success"></i>
-                    {% else %}
-                        <i class="bi bi-arrow-down-circle-fill text-danger"></i>
-                    {% endif %}
-                    <span class="ms-2 fw-bold">{{ t.descricao }}</span>
-                </div>
-                <span class="{{ 'text-success' if t.tipo == 'entrada' else 'text-danger' }} fw-bold">
-                    R$ {{ t.valor }}
-                </span>
-            </div>
+            <tr>
+                <td class="{{ 'entrada' if t.tipo == 'entrada' else 'saida' }}">
+                    {{ 'Entrada' if t.tipo == 'entrada' else 'Saída' }}
+                </td>
+                <td>{{ t.descricao }}</td>
+                <td>R$ {{ t.valor }}</td>
+            </tr>
             {% else %}
-            <div class="list-group-item text-center text-muted">
-                Nenhuma movimentação hoje.
-            </div>
+            <tr>
+                <td colspan="3" style="text-align: center;">Nenhuma movimentação hoje.</td>
+            </tr>
             {% endfor %}
-        </div>
-    </div>
+        </tbody>
+    </table>
 
-    <div class="modal fade" id="modalAdicionar" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Novo Lançamento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form action="{{ url_for('adicionar') }}" method="POST">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Tipo</label>
-                            <select name="tipo" class="form-select">
-                                <option value="entrada">🟢 Ganho (Corrida)</option>
-                                <option value="saida">🔴 Gasto (Gasolina/Lanche)</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Valor (R$)</label>
-                            <input type="number" step="0.01" name="valor" class="form-control" required placeholder="Ex: 15.50">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Descrição</label>
-                            <input type="text" name="descricao" class="form-control" required placeholder="Ex: Ifood, Gasolina...">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary w-100">Salvar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalMeta" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Qual sua meta hoje?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form action="{{ url_for('definir_meta') }}" method="POST">
-                    <div class="modal-body">
-                        <label class="form-label">Valor da Meta (R$)</label>
-                        <input type="number" step="0.01" name="meta" class="form-control" value="{{ meta }}" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary w-100">Atualizar Meta</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
