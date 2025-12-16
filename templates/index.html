@@ -2,294 +2,403 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - MotoCash</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MotoCash App</title>
     
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-body: #121214;
-            --bg-card: #202024;
-            --bg-input: #121214;
-            --primary: #8257e5;
-            --green: #04d361;
-            --red: #f75a68;
-            --text-main: #e1e1e6;
-            --text-muted: #8d8d99;
-            --border: #323238;
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
         }
 
         body {
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
+            padding-bottom: 80px; /* Espaço para o menu inferior */
+            min-height: 100vh;
         }
 
-        /* Utilitários de Texto e Cor */
-        .text-green { color: var(--green) !important; }
-        .text-red { color: var(--red) !important; }
-        .text-muted-custom { color: var(--text-muted) !important; }
-
-        /* Cards e Boxes */
-        .box, .card {
-            background-color: var(--bg-card);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        /* Container Mobile Centralizado */
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
         }
 
-        .box { padding: 1.5rem; }
-
-        /* Inputs e Formulários */
-        .form-control, .form-select {
-            background-color: var(--bg-input);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            border-radius: 8px;
-            padding: 0.75rem;
-        }
-
-        .form-control:focus, .form-select:focus {
-            background-color: var(--bg-input);
-            border-color: var(--primary);
-            color: var(--text-main);
-            box-shadow: 0 0 0 2px rgba(130, 87, 229, 0.25);
-        }
-
-        .form-control::placeholder { color: #555; }
-
-        /* Barra de Progresso */
-        .barra-fundo {
-            background-color: var(--bg-input);
-            border-radius: 99px;
-            height: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .barra-progresso {
-            background: linear-gradient(90deg, #04d361 0%, #00b37e 100%);
-            height: 100%;
-            border-radius: 99px;
-            transition: width 0.5s ease;
-        }
-
-        /* Botões */
-        .btn-primary {
-            background-color: var(--primary);
-            border: none;
-            font-weight: 600;
-        }
-        .btn-primary:hover { background-color: #9466ff; }
-        
-        .btn-success {
-            background-color: var(--green);
-            border: none;
-            color: #000;
-            font-weight: 700;
-        }
-        .btn-success:hover { background-color: #00b37e; }
-
-        /* Lista de Transações (Estilo Mobile) */
-        .transaction-item {
+        /* --- Header & Perfil --- */
+        .header-profile {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border);
+            align-items: center;
+            margin-bottom: 25px;
         }
-        .transaction-item:last-child { border-bottom: none; }
-        
-        .icon-circle {
-            width: 40px;
-            height: 40px;
+        .avatar-circle {
+            width: 45px;
+            height: 45px;
+            background: var(--primary-gradient);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
-            margin-right: 1rem;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
-        .icon-up { background: rgba(4, 211, 97, 0.1); color: var(--green); }
-        .icon-down { background: rgba(247, 90, 104, 0.1); color: var(--red); }
 
-        /* Efeito de Blur para o modo Privacidade */
-        .blur-text {
-            filter: blur(6px);
-            user-select: none;
-            transition: filter 0.3s ease;
+        /* --- Main Balance Card (Glassmorphism) --- */
+        .balance-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            margin-bottom: 25px;
+        }
+        
+        /* Efeito de brilho no fundo do card */
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(0,0,0,0) 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .balance-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .balance-value { font-size: 2.5rem; font-weight: 700; margin: 5px 0; z-index: 1; position: relative; }
+        
+        .stats-row {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .stat-item {
+            flex: 1;
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Meta Section --- */
+        .goal-section {
+            background: var(--glass-bg);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid var(--glass-border);
+        }
+        .progress {
+            height: 8px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            background: var(--primary-gradient);
+            border-radius: 10px;
+        }
+
+        /* --- Transaction List --- */
+        .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .transaction-list { list-style: none; padding: 0; }
+        .t-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .t-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+        .bg-icon-up { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+        .bg-icon-down { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+
+        /* --- Bottom Navigation --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #1e293b;
+            border-top: 1px solid var(--glass-border);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            transition: color 0.3s;
+        }
+        .nav-btn.active { color: #a855f7; }
+        
+        /* Floating Add Button */
+        .fab-add {
+            background: var(--primary-gradient);
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
+            border: 4px solid var(--bg-dark);
+            transform: translateY(-25px); /* Eleva o botão */
+        }
+
+        /* --- Modal Customization --- */
+        .modal-content {
+            background-color: #1e293b;
+            border: 1px solid var(--glass-border);
+            color: white;
+            border-radius: 24px 24px 0 0;
+        }
+        .modal-header { border-bottom: 1px solid var(--glass-border); }
+        .form-control, .form-select {
+            background-color: #0f172a;
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+        }
+        .form-control:focus {
+            background-color: #0f172a;
+            color: white;
+            border-color: #a855f7;
+            box-shadow: none;
+        }
+        
+        /* Utilitários */
+        .blur-value { filter: blur(8px); transition: filter 0.3s; }
+        .text-gradient {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
 <body>
 
-    <div class="container py-4" style="max-width: 600px;">
-        
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <small class="text-muted-custom">Bem-vindo de volta,</small>
-                <h2 class="fw-bold m-0">{{ nome }}</h2>
-            </div>
-            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm border-0">
-                <i class="fas fa-sign-out-alt fa-lg"></i>
+<div class="app-container">
+    
+    <div class="header-profile">
+        <div>
+            <span class="text-muted small">Bom dia,</span>
+            <h4 class="m-0 fw-bold">{{ nome }}</h4>
+        </div>
+        <div class="d-flex gap-3 align-items-center">
+            <i class="fas fa-eye text-muted fs-5" id="eye-icon" onclick="togglePrivacy()"></i>
+            <a href="{{ url_for('logout') }}" class="avatar-circle text-decoration-none text-white">
+                <i class="fas fa-motorcycle"></i>
             </a>
         </div>
-
-        <div class="box mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="m-0 fw-bold"><i class="fas fa-bullseye text-primary me-2"></i>Meta Diária</h5>
-                <span class="badge bg-dark text-white border border-secondary">R$ {{ meta }}</span>
-            </div>
-            
-            <div class="barra-fundo mb-2">
-                <div class="barra-progresso" style="width: {{ largura_barra }}%;"></div>
-            </div>
-            
-            <div class="d-flex justify-content-between small mb-3">
-                <span class="text-white">{{ porcentagem }}% concluído</span>
-                {% if fat_dia < meta %}
-                    <span class="text-muted-custom">Falta: <strong class="text-white">R$ {{ '%.2f'|format(meta - fat_dia) }}</strong></span>
-                {% else %}
-                    <span class="text-green fw-bold">Meta batida! 🚀</span>
-                {% endif %}
-            </div>
-
-            <form action="{{ url_for('definir_meta') }}" method="POST" class="input-group">
-                <input type="number" name="meta" step="0.01" value="{{ meta }}" class="form-control" placeholder="Nova meta" required>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i></button>
-            </form>
-        </div>
-
-        <div class="row g-3 mb-4">
-            <div class="col-12">
-                <div class="card p-4 position-relative overflow-hidden" style="background: linear-gradient(135deg, #29292e 0%, #202024 100%);">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <span class="text-muted-custom small text-uppercase fw-bold ls-1">Saldo Líquido</span>
-                            <h1 class="fw-bold text-white mt-1 mb-0">
-                                R$ <span class="valor-mascara">{{ saldo_dia }}</span>
-                            </h1>
-                        </div>
-                        <button onclick="alternarPrivacidade()" class="btn btn-link text-muted-custom p-0">
-                            <i id="icone-olho" class="fas fa-eye fa-lg"></i>
-                        </button>
-                    </div>
-                    <i class="fas fa-wallet position-absolute" style="bottom: -10px; right: -10px; font-size: 5rem; opacity: 0.05; color: white;"></i>
-                </div>
-            </div>
-
-            <div class="col-6">
-                <div class="card p-3 text-center border-0" style="background: rgba(4, 211, 97, 0.05);">
-                    <small class="text-green fw-bold mb-1 d-block"><i class="fas fa-arrow-up me-1"></i> Ganho</small>
-                    <h5 class="fw-bold text-white m-0">R$ <span class="valor-mascara">{{ fat_dia }}</span></h5>
-                </div>
-            </div>
-            
-            <div class="col-6">
-                <div class="card p-3 text-center border-0" style="background: rgba(247, 90, 104, 0.05);">
-                    <small class="text-red fw-bold mb-1 d-block"><i class="fas fa-arrow-down me-1"></i> Gasto</small>
-                    <h5 class="fw-bold text-white m-0">R$ <span class="valor-mascara">{{ gasto_dia }}</span></h5>
-                </div>
-            </div>
-        </div>
-
-        <div class="box mb-4">
-            <h5 class="mb-3 fw-bold">Novo Lançamento</h5>
-            <form action="{{ url_for('adicionar') }}" method="POST" class="row g-2">
-                <div class="col-4">
-                    <select name="tipo" class="form-select text-center fw-bold" required>
-                        <option value="entrada" class="text-success">Win</option>
-                        <option value="saida" class="text-danger">Loss</option>
-                    </select>
-                </div>
-                <div class="col-8">
-                    <input type="number" name="valor" step="0.01" class="form-control" placeholder="R$ 0,00" required>
-                </div>
-                <div class="col-12">
-                    <input type="text" name="descricao" class="form-control" placeholder="Descrição (Ex: iFood, Gasolina)" required>
-                </div>
-                <div class="col-12 mt-3">
-                    <button type="submit" class="btn btn-success w-100 py-2 rounded-3">
-                        <i class="fas fa-plus me-2"></i> ADICIONAR
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="box mb-4">
-            <h5 class="mb-3 fw-bold small text-uppercase text-muted-custom">Performance Semanal</h5>
-            <div style="height: 200px;">
-                <canvas id="graficoSemanal"></canvas>
-            </div>
-        </div>
-
-        <h5 class="mb-3 fw-bold px-1">Hoje</h5>
-        <div class="card px-3">
-            <div class="d-flex flex-column">
-                {% for t in transacoes %}
-                <div class="transaction-item">
-                    <div class="d-flex align-items-center">
-                        <div class="icon-circle {{ 'icon-up' if t.tipo == 'entrada' else 'icon-down' }}">
-                            <i class="fas {{ 'fa-arrow-up' if t.tipo == 'entrada' else 'fa-arrow-down' }}"></i>
-                        </div>
-                        <div>
-                            <span class="d-block fw-bold text-white">{{ t.descricao }}</span>
-                            <small class="text-muted-custom">{{ 'Entrada' if t.tipo == 'entrada' else 'Saída' }}</small>
-                        </div>
-                    </div>
-                    <span class="fw-bold {{ 'text-green' if t.tipo == 'entrada' else 'text-red' }}">
-                        {{ '+' if t.tipo == 'entrada' else '-' }} R$ <span class="valor-mascara">{{ t.valor }}</span>
-                    </span>
-                </div>
-                {% else %}
-                <div class="text-center py-5 text-muted-custom">
-                    <i class="fas fa-receipt fa-2x mb-2 opacity-50"></i>
-                    <p class="m-0">Nenhum movimento hoje.</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    
-    <script>
-        // Script simples para garantir que a função de privacidade funcione visualmente com as novas classes
-        const originalToggle = window.alternarPrivacidade; // Salva referência se existir
+    <div class="balance-card">
+        <div class="d-flex justify-content-between">
+            <span class="balance-label">Saldo Líquido</span>
+            <i class="fab fa-cc-visa text-muted fs-4"></i>
+        </div>
+        <div class="balance-value privacy-target">
+            R$ {{ saldo_dia }}
+        </div>
         
-        window.alternarPrivacidade = function() {
-            const elements = document.querySelectorAll('.valor-mascara');
-            const icon = document.getElementById('icone-olho');
-            
-            // Verifica estado atual baseado em um elemento
-            const isBlur = elements[0] && elements[0].classList.contains('blur-text');
-            
-            elements.forEach(el => {
-                if (isBlur) {
-                    el.classList.remove('blur-text');
-                } else {
-                    el.classList.add('blur-text');
-                }
-            });
+        <div class="stats-row">
+            <div class="stat-item">
+                <small class="text-muted mb-1"><i class="fas fa-arrow-up text-success me-1"></i> Ganho</small>
+                <span class="fw-bold privacy-target">{{ fat_dia }}</span>
+            </div>
+            <div class="stat-item">
+                <small class="text-muted mb-1"><i class="fas fa-arrow-down text-danger me-1"></i> Gasto</small>
+                <span class="fw-bold privacy-target">{{ gasto_dia }}</span>
+            </div>
+        </div>
+    </div>
 
-            // Alterna ícone
-            if (icon) {
-                icon.classList.toggle('fa-eye');
-                icon.classList.toggle('fa-eye-slash');
-            }
-            
-            // Chama a função original se ela fazia algo extra (como salvar no localStorage)
-            if (typeof originalToggle === 'function' && originalToggle !== window.alternarPrivacidade) {
-                // originalToggle(); 
-            }
+    <div class="goal-section">
+        <div class="d-flex justify-content-between align-items-end mb-2">
+            <span class="fw-bold small text-uppercase text-muted">Meta Diária</span>
+            <span class="fw-bold text-gradient">{{ porcentagem }}%</span>
+        </div>
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: {{ largura_barra }}%"></div>
+        </div>
+        <div class="d-flex justify-content-between small mt-2">
+            <span class="text-muted">Atual: R$ {{ fat_dia }}</span>
+            <span class="text-white">Alvo: R$ {{ meta }}</span>
+        </div>
+        <button class="btn btn-sm btn-outline-secondary w-100 mt-3 border-0 bg-dark text-muted" data-bs-toggle="modal" data-bs-target="#metaModal">
+            Alterar Meta
+        </button>
+    </div>
+
+    <div class="section-title">
+        <span>Últimas Corridas</span>
+        <small class="text-muted fw-normal" style="font-size: 0.8rem;">Hoje</small>
+    </div>
+
+    <div class="transaction-list pb-5">
+        {% for t in transacoes %}
+        <div class="t-item">
+            <div class="d-flex align-items-center">
+                <div class="t-icon {{ 'bg-icon-up' if t.tipo == 'entrada' else 'bg-icon-down' }}">
+                    <i class="fas {{ 'fa-motorcycle' if t.tipo == 'entrada' else 'fa-gas-pump' }}"></i>
+                </div>
+                <div>
+                    <span class="d-block fw-bold" style="font-size: 0.95rem;">{{ t.descricao }}</span>
+                    <small class="text-muted" style="font-size: 0.75rem;">
+                        {{ '10:30' }} </small>
+                </div>
+            </div>
+            <span class="fw-bold privacy-target {{ 'text-success' if t.tipo == 'entrada' else 'text-danger' }}">
+                {{ '+' if t.tipo == 'entrada' else '-' }} R$ {{ t.valor }}
+            </span>
+        </div>
+        {% else %}
+        <div class="text-center py-5 text-muted">
+            <i class="fas fa-road fa-2x mb-3 opacity-25"></i>
+            <p>Nenhuma corrida iniciada.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<div class="bottom-nav">
+    <button class="nav-btn active"><i class="fas fa-home"></i></button>
+    
+    <button class="fab-add" data-bs-toggle="modal" data-bs-target="#addModal">
+        <i class="fas fa-plus"></i>
+    </button>
+    
+    <button class="nav-btn" onclick="scrollToChart()"><i class="fas fa-chart-pie"></i></button>
+</div>
+
+<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Novo Lançamento</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-4">
+                <form action="{{ url_for('adicionar') }}" method="POST">
+                    
+                    <div class="mb-3">
+                        <label class="small text-muted mb-2">Tipo de lançamento</label>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="tipo" value="entrada" id="radioEntrada" checked>
+                            <label class="btn btn-outline-success" for="radioEntrada">Ganho</label>
+
+                            <input type="radio" class="btn-check" name="tipo" value="saida" id="radioSaida">
+                            <label class="btn btn-outline-danger" for="radioSaida">Gasto</label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="small text-muted">Valor</label>
+                        <input type="number" name="valor" step="0.01" class="form-control form-control-lg fw-bold text-center" placeholder="0.00" required style="font-size: 1.5rem;">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="small text-muted">Descrição</label>
+                        <input type="text" name="descricao" class="form-control" placeholder="Ex: iFood, Gasolina..." required>
+                    </div>
+
+                    <button type="submit" class="btn w-100 fw-bold py-3 text-white" style="background: var(--primary-gradient); border: none; border-radius: 12px;">
+                        SALVAR
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="metaModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-body p-4 text-center">
+                <h5 class="mb-4">Nova Meta Diária</h5>
+                <form action="{{ url_for('definir_meta') }}" method="POST">
+                    <input type="number" name="meta" step="0.01" value="{{ meta }}" class="form-control form-control-lg text-center mb-3" required>
+                    <button type="submit" class="btn btn-primary w-100">Atualizar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="display:none;">
+    <canvas id="graficoSemanal"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Função de Privacidade (Olho)
+    function togglePrivacy() {
+        const elements = document.querySelectorAll('.privacy-target');
+        const icon = document.getElementById('eye-icon');
+        
+        elements.forEach(el => {
+            el.classList.toggle('blur-value');
+        });
+        
+        if (icon.classList.contains('fa-eye')) {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
         }
-    </script>
+    }
+
+    // Scroll suave se precisar
+    function scrollToChart() {
+        // Implementar lógica de gráfico se necessário
+        alert('Aqui entraria a tela de gráficos detalhados!');
+    }
+</script>
 
 </body>
 </html>
