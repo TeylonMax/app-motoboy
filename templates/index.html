@@ -8,7 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -17,96 +16,126 @@
     
     <div class="header-profile">
         <div>
-            <span class="text-muted small">Bom dia,</span>
-            <h4 class="m-0 fw-bold">{{ nome }}</h4>
+            <span class="text-muted small">Olá,</span>
+            <h4 class="m-0 fw-bold">{{ nome.split()[0] }}</h4>
         </div>
         <div class="d-flex gap-3 align-items-center">
-            <i class="fas fa-eye text-muted fs-5" id="eye-icon" onclick="togglePrivacy()"></i>
+            <i class="fas fa-eye text-muted fs-5 cursor-pointer" id="eye-icon" onclick="togglePrivacy()"></i>
             <a href="{{ url_for('logout') }}" class="avatar-circle text-decoration-none text-white">
-                <i class="fas fa-motorcycle"></i>
+                <i class="fas fa-power-off"></i>
             </a>
         </div>
     </div>
 
-    <div class="balance-card">
-        <div class="d-flex justify-content-between">
-            <span class="balance-label">Saldo Líquido</span>
-            <i class="fab fa-cc-visa text-muted fs-4"></i>
+    <div id="view-home">
+        <div class="balance-card">
+            <div class="d-flex justify-content-between">
+                <span class="balance-label">Saldo do Dia</span>
+                <i class="fab fa-cc-visa text-muted fs-4"></i>
+            </div>
+            <div class="balance-value privacy-target">
+                R$ {{ saldo_dia | format_currency }}
+            </div>
+            
+            <div class="stats-row">
+                <div class="stat-item">
+                    <small class="text-muted mb-1"><i class="fas fa-arrow-up text-success me-1"></i> Ganho</small>
+                    <span class="fw-bold privacy-target">{{ fat_dia | format_currency }}</span>
+                </div>
+                <div class="stat-item">
+                    <small class="text-muted mb-1"><i class="fas fa-arrow-down text-danger me-1"></i> Gasto</small>
+                    <span class="fw-bold privacy-target">{{ gasto_dia | format_currency }}</span>
+                </div>
+            </div>
         </div>
-        <div class="balance-value privacy-target">
-            R$ {{ saldo_dia }}
+
+        <div class="goal-section">
+            <div class="d-flex justify-content-between align-items-end mb-2">
+                <span class="fw-bold small text-uppercase text-muted">Meta Diária</span>
+                <span class="fw-bold text-gradient">{{ porcentagem }}%</span>
+            </div>
+            <div class="progress">
+                <div class="progress-bar {{ cor_barra }}" role="progressbar" style="width: {{ largura_barra }}%"></div>
+            </div>
+            <div class="d-flex justify-content-between small mt-2">
+                <span class="text-muted">Atual: R$ {{ fat_dia | format_currency }}</span>
+                <span class="text-white">Alvo: R$ {{ meta | format_currency }}</span>
+            </div>
+        </div>
+
+        <div class="section-title">
+            <span>Extrato Recente</span>
+            <small class="text-muted fw-normal" style="font-size: 0.8rem;">Hoje</small>
+        </div>
+
+        <div class="transaction-list pb-5">
+            {% for t in transacoes %}
+            <div class="t-item">
+                <div class="d-flex align-items-center">
+                    <div class="t-icon {{ 'bg-icon-up' if t.tipo == 'entrada' else 'bg-icon-down' }}">
+                        <i class="fas {{ 'fa-motorcycle' if t.tipo == 'entrada' else 'fa-shop' }}"></i>
+                    </div>
+                    <div>
+                        <span class="d-block fw-bold" style="font-size: 0.95rem;">{{ t.descricao }}</span>
+                        <small class="text-muted" style="font-size: 0.75rem;">
+                            {{ t.data.split('-')[2] }}/{{ t.data.split('-')[1] }}
+                        </small>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <div class="fw-bold privacy-target {{ 'text-success' if t.tipo == 'entrada' else 'text-danger' }}">
+                        {{ '+' if t.tipo == 'entrada' else '-' }} R$ {{ t.valor | format_currency }}
+                    </div>
+                    <a href="{{ url_for('deletar', id=t.id) }}" class="text-secondary opacity-50 small text-decoration-none" onclick="return confirm('Apagar este item?')">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted opacity-50">
+                <i class="fas fa-road fa-3x mb-3"></i>
+                <p>Nenhuma corrida hoje.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="view-stats" style="display: none;">
+        <h5 class="mb-4 fw-bold">Desempenho Semanal</h5>
+        <div class="card dashboard-card p-3 mb-4">
+            <canvas id="graficoSemanal"></canvas>
         </div>
         
-        <div class="stats-row">
-            <div class="stat-item">
-                <small class="text-muted mb-1"><i class="fas fa-arrow-up text-success me-1"></i> Ganho</small>
-                <span class="fw-bold privacy-target">{{ fat_dia }}</span>
-            </div>
-            <div class="stat-item">
-                <small class="text-muted mb-1"><i class="fas fa-arrow-down text-danger me-1"></i> Gasto</small>
-                <span class="fw-bold privacy-target">{{ gasto_dia }}</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="goal-section">
-        <div class="d-flex justify-content-between align-items-end mb-2">
-            <span class="fw-bold small text-uppercase text-muted">Meta Diária</span>
-            <span class="fw-bold text-gradient">{{ porcentagem }}%</span>
-        </div>
-        <div class="progress">
-            <div class="progress-bar" role="progressbar" style="width: {{ largura_barra }}%"></div>
-        </div>
-        <div class="d-flex justify-content-between small mt-2">
-            <span class="text-muted">Atual: R$ {{ fat_dia }}</span>
-            <span class="text-white">Alvo: R$ {{ meta }}</span>
-        </div>
-        <button class="btn btn-sm btn-outline-secondary w-100 mt-3 border-0 bg-dark text-muted" data-bs-toggle="modal" data-bs-target="#metaModal">
-            Alterar Meta
-        </button>
-    </div>
-
-    <div class="section-title">
-        <span>Últimas Corridas</span>
-        <small class="text-muted fw-normal" style="font-size: 0.8rem;">Hoje</small>
-    </div>
-
-    <div class="transaction-list pb-5">
-        {% for t in transacoes %}
-        <div class="t-item">
-            <div class="d-flex align-items-center">
-                <div class="t-icon {{ 'bg-icon-up' if t.tipo == 'entrada' else 'bg-icon-down' }}">
-                    <i class="fas {{ 'fa-motorcycle' if t.tipo == 'entrada' else 'fa-gas-pump' }}"></i>
-                </div>
-                <div>
-                    <span class="d-block fw-bold" style="font-size: 0.95rem;">{{ t.descricao }}</span>
-                    <small class="text-muted" style="font-size: 0.75rem;">
-                        {{ 'Agora' }} 
-                    </small>
+        <div class="row g-2">
+            <div class="col-6">
+                <div class="stat-box-alt">
+                    <span class="text-muted small">Faturamento Mês</span>
+                    <h4 class="mt-1 text-success fw-bold privacy-target">R$ {{ fat_mes | format_currency }}</h4>
                 </div>
             </div>
-            <span class="fw-bold privacy-target {{ 'text-success' if t.tipo == 'entrada' else 'text-danger' }}">
-                {{ '+' if t.tipo == 'entrada' else '-' }} R$ {{ t.valor }}
-            </span>
+            <div class="col-6">
+                 <div class="stat-box-alt">
+                    <span class="text-muted small">Meta do Mês</span>
+                    <h4 class="mt-1 text-white fw-bold">R$ {{ (meta * 30) | format_currency }}</h4>
+                </div>
+            </div>
         </div>
-        {% else %}
-        <div class="text-center py-5 text-muted">
-            <i class="fas fa-road fa-2x mb-3 opacity-25"></i>
-            <p>Nenhuma movimentação hoje.</p>
-        </div>
-        {% endfor %}
     </div>
 
 </div>
 
 <div class="bottom-nav">
-    <button class="nav-btn active"><i class="fas fa-home"></i></button>
+    <button class="nav-btn active" onclick="switchTab('home')" id="btn-home">
+        <i class="fas fa-home"></i>
+    </button>
     
     <button class="fab-add" data-bs-toggle="modal" data-bs-target="#addModal">
         <i class="fas fa-plus"></i>
     </button>
     
-    <button class="nav-btn"><i class="fas fa-chart-pie"></i></button>
+    <button class="nav-btn" onclick="switchTab('stats')" id="btn-stats">
+        <i class="fas fa-chart-pie"></i>
+    </button>
 </div>
 
 <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
@@ -117,57 +146,37 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body pt-3">
-                <form action="{{ url_for('adicionar') }}" method="POST" id="formTransacao">
+                <form action="{{ url_for('adicionar') }}" method="POST">
                     
                     <div class="row g-2 mb-4">
                         <div class="col-6">
                             <input type="radio" class="btn-check" name="tipo" value="entrada" id="radioEntrada" checked onchange="mudarTipo('entrada')">
                             <label class="btn-tipo btn-tipo-entrada w-100 d-flex flex-column align-items-center justify-content-center" for="radioEntrada">
-                                <i class="fas fa-arrow-up mb-1"></i>
-                                <span>Ganho</span>
+                                <i class="fas fa-arrow-up mb-1"></i> Ganho
                             </label>
                         </div>
                         <div class="col-6">
                             <input type="radio" class="btn-check" name="tipo" value="saida" id="radioSaida" onchange="mudarTipo('saida')">
                             <label class="btn-tipo btn-tipo-saida w-100 d-flex flex-column align-items-center justify-content-center" for="radioSaida">
-                                <i class="fas fa-arrow-down mb-1"></i>
-                                <span>Gasto</span>
+                                <i class="fas fa-arrow-down mb-1"></i> Gasto
                             </label>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="small text-muted mb-1 ps-1">Valor (R$)</label>
-                        <input type="number" name="valor" step="0.01" class="form-control form-control-lg fw-bold text-center input-valor" placeholder="0.00" required inputmode="decimal">
+                    <div class="mb-3 position-relative">
+                        <span class="position-absolute text-muted" style="left: 15px; top: 18px;">R$</span>
+                        <input type="number" name="valor" step="0.01" class="form-control form-control-lg fw-bold text-center input-valor" placeholder="0,00" required inputmode="decimal">
                     </div>
 
                     <div class="mb-3">
-                        <label class="small text-muted mb-2 ps-1">Toque para selecionar:</label>
-                        <div id="chipsContainer" class="d-flex flex-wrap gap-2 justify-content-center">
-                            </div>
+                        <div id="chipsContainer" class="d-flex flex-wrap gap-2 justify-content-center"></div>
                     </div>
 
                     <div class="mb-4">
                         <input type="text" name="descricao" id="inputDescricao" class="form-control" placeholder="Descrição..." required>
                     </div>
 
-                    <button type="submit" class="btn w-100 fw-bold py-3 text-white btn-salvar">
-                        CONFIRMAR
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="metaModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-        <div class="modal-content">
-            <div class="modal-body p-4 text-center">
-                <h5 class="mb-4">Nova Meta Diária</h5>
-                <form action="{{ url_for('definir_meta') }}" method="POST">
-                    <input type="number" name="meta" step="0.01" value="{{ meta }}" class="form-control form-control-lg text-center mb-3" required>
-                    <button type="submit" class="btn btn-primary w-100 btn-salvar">Atualizar</button>
+                    <button type="submit" class="btn w-100 fw-bold py-3 text-white btn-salvar">SALVAR</button>
                 </form>
             </div>
         </div>

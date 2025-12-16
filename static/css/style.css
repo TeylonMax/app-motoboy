@@ -13,19 +13,16 @@ body {
     background-color: var(--bg-dark);
     color: var(--text-light);
     font-family: 'Poppins', sans-serif;
-    padding-bottom: 90px; /* Espaço extra para o menu inferior não cobrir conteúdo */
+    padding-bottom: 90px;
     min-height: 100vh;
 }
 
-/* Container Mobile */
 .app-container {
     max-width: 480px;
     margin: 0 auto;
     padding: 20px;
-    position: relative;
 }
 
-/* Header */
 .header-profile {
     display: flex;
     justify-content: space-between;
@@ -35,16 +32,16 @@ body {
 .avatar-circle {
     width: 45px;
     height: 45px;
-    background: var(--primary-gradient);
+    background: rgba(255,255,255,0.1);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    font-size: 1.1rem;
+    transition: 0.2s;
 }
+.avatar-circle:hover { background: var(--accent-red); }
 
-/* Cartão de Saldo */
 .balance-card {
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
@@ -69,7 +66,7 @@ body {
     pointer-events: none;
 }
 .balance-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-.balance-value { font-size: 2.5rem; font-weight: 700; margin: 5px 0; z-index: 1; position: relative; }
+.balance-value { font-size: 2.2rem; font-weight: 700; margin: 5px 0; z-index: 1; position: relative; }
 
 .stats-row {
     display: flex;
@@ -87,7 +84,14 @@ body {
     flex-direction: column;
 }
 
-/* Meta Section */
+.stat-box-alt {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 15px;
+    text-align: center;
+}
+
 .goal-section {
     background: var(--glass-bg);
     border-radius: 20px;
@@ -101,13 +105,10 @@ body {
     border-radius: 10px;
     margin: 10px 0;
 }
-.progress-bar {
-    background: var(--primary-gradient);
-    border-radius: 10px;
-}
+.progress-bar { border-radius: 10px; transition: width 1s ease-in-out; }
 
-/* Lista de Transações */
 .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+
 .t-item {
     display: flex;
     align-items: center;
@@ -128,7 +129,6 @@ body {
 .bg-icon-up { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
 .bg-icon-down { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
 
-/* Menu Inferior (Bottom Nav) */
 .bottom-nav {
     position: fixed;
     bottom: 0;
@@ -136,7 +136,7 @@ body {
     width: 100%;
     background: #1e293b;
     border-top: 1px solid var(--glass-border);
-    padding: 10px 20px 20px 20px; /* Padding extra embaixo para iphones novos */
+    padding: 10px 20px 20px 20px;
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -151,7 +151,6 @@ body {
 }
 .nav-btn.active { color: #a855f7; }
 
-/* Botão Flutuante (FAB) */
 .fab-add {
     background: var(--primary-gradient);
     width: 60px;
@@ -167,7 +166,6 @@ body {
     transform: translateY(-30px);
 }
 
-/* Modais Customizados */
 .modal-content {
     background-color: #1e293b;
     border: 1px solid var(--glass-border);
@@ -189,7 +187,6 @@ body {
     box-shadow: none;
 }
 
-/* Botões de Seleção (Ganho/Gasto) */
 .btn-tipo {
     padding: 15px;
     border-radius: 16px;
@@ -205,17 +202,14 @@ body {
     border-color: var(--accent-green);
     color: var(--accent-green);
     opacity: 1;
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
 }
 .btn-check:checked + .btn-tipo-saida {
     background: rgba(239, 68, 68, 0.2);
     border-color: var(--accent-red);
     color: var(--accent-red);
     opacity: 1;
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
 }
 
-/* Chips de Categoria */
 .chip-cat {
     padding: 8px 16px;
     border-radius: 50px;
@@ -232,7 +226,6 @@ body {
     color: white;
 }
 
-/* Input de Valor Gigante */
 .input-valor {
     font-size: 2rem;
     background: #0f172a !important;
@@ -240,21 +233,8 @@ body {
     border-bottom: 2px solid var(--glass-border);
     border-radius: 0;
 }
-.input-valor:focus {
-    border-bottom-color: #a855f7;
-    box-shadow: none;
-}
-
-.btn-salvar {
-    background: var(--primary-gradient);
-    border: none;
-    border-radius: 12px;
-}
-
-/* Efeitos Utilitários */
+.input-valor:focus { border-bottom-color: #a855f7; box-shadow: none; }
+.btn-salvar { background: var(--primary-gradient); border: none; border-radius: 12px; }
 .blur-value { filter: blur(8px); transition: filter 0.3s; }
-.text-gradient {
-    background: var(--primary-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+.text-gradient { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.cursor-pointer { cursor: pointer; }
