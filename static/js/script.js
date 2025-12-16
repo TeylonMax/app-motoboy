@@ -1,94 +1,86 @@
-document.addEventListener("DOMContentLoaded", function() {
-    carregarGrafico();
+// --- Lógica de Privacidade (Olho) ---
+function togglePrivacy() {
+    const elements = document.querySelectorAll('.privacy-target');
+    const icon = document.getElementById('eye-icon');
     
-    // Recupera estado da privacidade (se o usuário deixou escondido antes)
-    if (localStorage.getItem('saldoOculto') === 'true') {
-        alternarPrivacidade(false); // False para não inverter, apenas aplicar
+    // Alterna a classe de desfoque
+    elements.forEach(el => {
+        el.classList.toggle('blur-value');
+    });
+    
+    // Alterna o ícone
+    if (icon.classList.contains('fa-eye')) {
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+// --- Lógica do Modal de Lançamentos ---
+
+// Configuração das categorias (Aqui você edita os nomes e ícones)
+const categorias = {
+    'entrada': [
+        { icone: 'fa-burger', nome: 'iFood' },
+        { icone: 'fa-motorcycle', nome: 'Moto Uber' },
+        { icone: 'fa-helmet-safety', nome: '99 Moto' },
+        { icone: 'fa-box', nome: 'Entrega Part.' }
+    ],
+    'saida': [
+        { icone: 'fa-gas-pump', nome: 'Gasolina' },
+        { icone: 'fa-wrench', nome: 'Manutenção' },
+        { icone: 'fa-utensils', nome: 'Almoço' },
+        { icone: 'fa-mobile', nome: 'Internet' },
+        { icone: 'fa-file-invoice', nome: 'Multa' }
+    ]
+};
+
+// Função para renderizar os botões de categoria
+function mudarTipo(tipo) {
+    const container = document.getElementById('chipsContainer');
+    const inputDesc = document.getElementById('inputDescricao');
+    
+    // Limpa container atual
+    container.innerHTML = '';
+    
+    // Limpa input de descrição para não misturar
+    inputDesc.value = '';
+
+    // Verifica se o tipo existe no objeto
+    if (categorias[tipo]) {
+        categorias[tipo].forEach(cat => {
+            // Cria o elemento visual da categoria (chip)
+            const btn = document.createElement('div');
+            btn.className = 'chip-cat';
+            btn.innerHTML = `<i class="fas ${cat.icone} me-2"></i>${cat.nome}`;
+            
+            // Evento de clique no chip
+            btn.onclick = function() {
+                // Remove destaque de todos
+                document.querySelectorAll('.chip-cat').forEach(c => c.classList.remove('active'));
+                
+                // Destaca o clicado
+                this.classList.add('active');
+                
+                // Preenche o campo de texto automaticamente
+                inputDesc.value = cat.nome;
+            };
+            
+            container.appendChild(btn);
+        });
+    }
+}
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+    // Garante que comece com "entrada" selecionado
+    mudarTipo('entrada');
+    
+    // Configuração básica do gráfico (se existir o canvas)
+    const ctx = document.getElementById('graficoSemanal');
+    if (ctx) {
+        // Aqui você pode colocar a lógica do gráfico Chart.js se decidir usar
     }
 });
-
-// --- Função 1: Modo Privacidade (Esconder Valores) ---
-let oculto = false;
-
-function alternarPrivacidade(inverter = true) {
-    if (inverter) {
-        oculto = !oculto;
-        // Salva a preferência no navegador do usuário
-        localStorage.setItem('saldoOculto', oculto);
-    } else {
-        oculto = true;
-    }
-
-    const valores = document.querySelectorAll('.valor-mascara');
-    const icone = document.getElementById('icone-olho');
-
-    valores.forEach(elemento => {
-        if (oculto) {
-            // Guarda o valor original num atributo 'data-valor' se ainda não tiver
-            if (!elemento.getAttribute('data-original')) {
-                elemento.setAttribute('data-original', elemento.innerText);
-            }
-            elemento.innerText = '----';
-        } else {
-            // Restaura o valor original
-            if (elemento.getAttribute('data-original')) {
-                elemento.innerText = elemento.getAttribute('data-original');
-            }
-        }
-    });
-
-    // Troca o ícone
-    if (icone) {
-        icone.className = oculto ? 'fas fa-eye-slash' : 'fas fa-eye';
-    }
-}
-
-// --- Função 2: Gráfico com Chart.js ---
-function carregarGrafico() {
-    fetch('/dados_grafico')
-        .then(response => response.json())
-        .then(dados => {
-            const ctx = document.getElementById('graficoSemanal').getContext('2d');
-            
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: dados.labels,
-                    datasets: [
-                        {
-                            label: 'Ganhos',
-                            data: dados.entradas,
-                            backgroundColor: '#00f2c3',
-                            borderRadius: 5,
-                            borderSkipped: false
-                        },
-                        {
-                            label: 'Gastos',
-                            data: dados.saidas,
-                            backgroundColor: '#fd5d93',
-                            borderRadius: 5,
-                            borderSkipped: false
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { labels: { color: 'white' } } // Legenda branca
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#2b3553' }, // Linhas do grid sutis
-                            ticks: { color: '#9a9a9a' }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#9a9a9a' }
-                        }
-                    }
-                }
-            });
-        })
-        .catch(error => console.error('Erro ao carregar gráfico:', error));
-}

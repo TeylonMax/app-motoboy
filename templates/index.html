@@ -8,213 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --bg-dark: #0f172a;
-            --glass-bg: rgba(30, 41, 59, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            font-family: 'Poppins', sans-serif;
-            padding-bottom: 80px; /* Espaço para o menu inferior */
-            min-height: 100vh;
-        }
-
-        /* Container Mobile Centralizado */
-        .app-container {
-            max-width: 480px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-        }
-
-        /* --- Header & Perfil --- */
-        .header-profile {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-        .avatar-circle {
-            width: 45px;
-            height: 45px;
-            background: var(--primary-gradient);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-
-        /* --- Main Balance Card (Glassmorphism) --- */
-        .balance-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 25px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-            margin-bottom: 25px;
-        }
-        
-        /* Efeito de brilho no fundo do card */
-        .balance-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(0,0,0,0) 70%);
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .balance-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-        .balance-value { font-size: 2.5rem; font-weight: 700; margin: 5px 0; z-index: 1; position: relative; }
-        
-        .stats-row {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            position: relative;
-            z-index: 1;
-        }
-        .stat-item {
-            flex: 1;
-            background: rgba(255,255,255,0.03);
-            border-radius: 16px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* --- Meta Section --- */
-        .goal-section {
-            background: var(--glass-bg);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 25px;
-            border: 1px solid var(--glass-border);
-        }
-        .progress {
-            height: 8px;
-            background-color: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            margin: 10px 0;
-        }
-        .progress-bar {
-            background: var(--primary-gradient);
-            border-radius: 10px;
-        }
-
-        /* --- Transaction List --- */
-        .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        
-        .transaction-list { list-style: none; padding: 0; }
-        .t-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--glass-border);
-        }
-        .t-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            margin-right: 15px;
-        }
-        .bg-icon-up { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
-        .bg-icon-down { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
-
-        /* --- Bottom Navigation --- */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: #1e293b;
-            border-top: 1px solid var(--glass-border);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
-        }
-        .nav-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.5rem;
-            transition: color 0.3s;
-        }
-        .nav-btn.active { color: #a855f7; }
-        
-        /* Floating Add Button */
-        .fab-add {
-            background: var(--primary-gradient);
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
-            border: 4px solid var(--bg-dark);
-            transform: translateY(-25px); /* Eleva o botão */
-        }
-
-        /* --- Modal Customization --- */
-        .modal-content {
-            background-color: #1e293b;
-            border: 1px solid var(--glass-border);
-            color: white;
-            border-radius: 24px 24px 0 0;
-        }
-        .modal-header { border-bottom: 1px solid var(--glass-border); }
-        .form-control, .form-select {
-            background-color: #0f172a;
-            border: 1px solid var(--glass-border);
-            color: white;
-            padding: 12px;
-            border-radius: 12px;
-        }
-        .form-control:focus {
-            background-color: #0f172a;
-            color: white;
-            border-color: #a855f7;
-            box-shadow: none;
-        }
-        
-        /* Utilitários */
-        .blur-value { filter: blur(8px); transition: filter 0.3s; }
-        .text-gradient {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-    </style>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
@@ -286,7 +81,8 @@
                 <div>
                     <span class="d-block fw-bold" style="font-size: 0.95rem;">{{ t.descricao }}</span>
                     <small class="text-muted" style="font-size: 0.75rem;">
-                        {{ '10:30' }} </small>
+                        {{ 'Agora' }} 
+                    </small>
                 </div>
             </div>
             <span class="fw-bold privacy-target {{ 'text-success' if t.tipo == 'entrada' else 'text-danger' }}">
@@ -296,7 +92,7 @@
         {% else %}
         <div class="text-center py-5 text-muted">
             <i class="fas fa-road fa-2x mb-3 opacity-25"></i>
-            <p>Nenhuma corrida iniciada.</p>
+            <p>Nenhuma movimentação hoje.</p>
         </div>
         {% endfor %}
     </div>
@@ -310,7 +106,7 @@
         <i class="fas fa-plus"></i>
     </button>
     
-    <button class="nav-btn" onclick="scrollToChart()"><i class="fas fa-chart-pie"></i></button>
+    <button class="nav-btn"><i class="fas fa-chart-pie"></i></button>
 </div>
 
 <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
@@ -320,32 +116,43 @@
                 <h5 class="modal-title fw-bold">Novo Lançamento</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body pt-4">
-                <form action="{{ url_for('adicionar') }}" method="POST">
+            <div class="modal-body pt-3">
+                <form action="{{ url_for('adicionar') }}" method="POST" id="formTransacao">
                     
-                    <div class="mb-3">
-                        <label class="small text-muted mb-2">Tipo de lançamento</label>
-                        <div class="btn-group w-100" role="group">
-                            <input type="radio" class="btn-check" name="tipo" value="entrada" id="radioEntrada" checked>
-                            <label class="btn btn-outline-success" for="radioEntrada">Ganho</label>
-
-                            <input type="radio" class="btn-check" name="tipo" value="saida" id="radioSaida">
-                            <label class="btn btn-outline-danger" for="radioSaida">Gasto</label>
+                    <div class="row g-2 mb-4">
+                        <div class="col-6">
+                            <input type="radio" class="btn-check" name="tipo" value="entrada" id="radioEntrada" checked onchange="mudarTipo('entrada')">
+                            <label class="btn-tipo btn-tipo-entrada w-100 d-flex flex-column align-items-center justify-content-center" for="radioEntrada">
+                                <i class="fas fa-arrow-up mb-1"></i>
+                                <span>Ganho</span>
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            <input type="radio" class="btn-check" name="tipo" value="saida" id="radioSaida" onchange="mudarTipo('saida')">
+                            <label class="btn-tipo btn-tipo-saida w-100 d-flex flex-column align-items-center justify-content-center" for="radioSaida">
+                                <i class="fas fa-arrow-down mb-1"></i>
+                                <span>Gasto</span>
+                            </label>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="small text-muted">Valor</label>
-                        <input type="number" name="valor" step="0.01" class="form-control form-control-lg fw-bold text-center" placeholder="0.00" required style="font-size: 1.5rem;">
+                        <label class="small text-muted mb-1 ps-1">Valor (R$)</label>
+                        <input type="number" name="valor" step="0.01" class="form-control form-control-lg fw-bold text-center input-valor" placeholder="0.00" required inputmode="decimal">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="small text-muted mb-2 ps-1">Toque para selecionar:</label>
+                        <div id="chipsContainer" class="d-flex flex-wrap gap-2 justify-content-center">
+                            </div>
                     </div>
 
                     <div class="mb-4">
-                        <label class="small text-muted">Descrição</label>
-                        <input type="text" name="descricao" class="form-control" placeholder="Ex: iFood, Gasolina..." required>
+                        <input type="text" name="descricao" id="inputDescricao" class="form-control" placeholder="Descrição..." required>
                     </div>
 
-                    <button type="submit" class="btn w-100 fw-bold py-3 text-white" style="background: var(--primary-gradient); border: none; border-radius: 12px;">
-                        SALVAR
+                    <button type="submit" class="btn w-100 fw-bold py-3 text-white btn-salvar">
+                        CONFIRMAR
                     </button>
                 </form>
             </div>
@@ -360,45 +167,16 @@
                 <h5 class="mb-4">Nova Meta Diária</h5>
                 <form action="{{ url_for('definir_meta') }}" method="POST">
                     <input type="number" name="meta" step="0.01" value="{{ meta }}" class="form-control form-control-lg text-center mb-3" required>
-                    <button type="submit" class="btn btn-primary w-100">Atualizar</button>
+                    <button type="submit" class="btn btn-primary w-100 btn-salvar">Atualizar</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 
-<div style="display:none;">
-    <canvas id="graficoSemanal"></canvas>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-    // Função de Privacidade (Olho)
-    function togglePrivacy() {
-        const elements = document.querySelectorAll('.privacy-target');
-        const icon = document.getElementById('eye-icon');
-        
-        elements.forEach(el => {
-            el.classList.toggle('blur-value');
-        });
-        
-        if (icon.classList.contains('fa-eye')) {
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    }
-
-    // Scroll suave se precisar
-    function scrollToChart() {
-        // Implementar lógica de gráfico se necessário
-        alert('Aqui entraria a tela de gráficos detalhados!');
-    }
-</script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 </body>
 </html>
