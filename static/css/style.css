@@ -1,20 +1,23 @@
 :root {
     --bg-dark: #1e1e2e;
     --card-bg: #27293d;
-    --accent-green: #00f2c3;
-    --accent-red: #fd5d93;
+    --accent-green: #00f2c3; /* Cor de Entrada/Ganho */
+    --accent-red: #fd5d93; /* Cor de Saída/Gasto */
+    --accent-blue: #1d8cf8; /* Cor Primária/Meta */
     --text-primary: #ffffff;
     --text-secondary: #9a9a9a;
 }
 
+/* Base Geral */
 body {
     background-color: var(--bg-dark);
     font-family: 'Poppins', sans-serif;
     color: var(--text-primary);
-    padding-bottom: 80px;
+    padding: 20px;
+    margin: 0;
 }
 
-/* Estilo dos Cards Principais */
+/* Estilo dos Cards Principais (Usado em login e registro) */
 .dashboard-card {
     background: var(--card-bg);
     border-radius: 20px;
@@ -23,79 +26,154 @@ body {
     transition: transform 0.2s;
 }
 
-.dashboard-card:active {
-    transform: scale(0.98);
-}
-
-.main-balance {
-    background: linear-gradient(45deg, #1d8cf8, #3358f4);
-    color: white;
-}
-
-.icon-circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Formulários de Autenticação e Inputs Gerais */
+.form-control, .form-select, input[type="text"], input[type="number"], select {
+    background-color: #1e1e2e !important;
+    border: 1px solid #2b3553 !important;
+    color: white !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+    /* Para o index.html */
+    width: 100%;
     margin-bottom: 10px;
-    font-size: 1.2rem;
+}
+.form-control:focus, .form-select:focus, input:focus, select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(29, 140, 248, 0.25) !important;
+    border-color: var(--accent-blue) !important;
 }
 
-.bg-icon-green { background: rgba(0, 242, 195, 0.2); color: var(--accent-green); }
-.bg-icon-red { background: rgba(253, 93, 147, 0.2); color: var(--accent-red); }
+/* Botões do Bootstrap */
+.btn-primary { background-color: var(--accent-blue) !important; border-color: var(--accent-blue) !important; }
+.btn-success { background-color: var(--accent-green) !important; border-color: var(--accent-green) !important; color: var(--bg-dark) !important; }
 
-/* Lista de Transações */
-.transaction-item {
-    background-color: var(--card-bg);
-    border-radius: 15px;
-    margin-bottom: 10px;
-    border: none;
-    color: white;
-    padding: 15px;
-}
+/* Links */
+a { text-decoration: none; }
+.text-info { color: var(--accent-blue) !important; }
 
-.transaction-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    background: #34364a;
-    display: flex;
+/* ==================================== */
+/* Estilos Específicos do Dashboard (index.html) */
+/* ==================================== */
+
+h1, h3 { font-weight: 700; }
+
+/* Cabeçalho de Saudação e Logout */
+div[style*="justify-content: space-between"] {
+    padding-bottom: 20px;
+    border-bottom: 1px solid #2b3553;
+    margin-bottom: 20px;
     align-items: center;
-    justify-content: center;
-    margin-right: 15px;
-    color: var(--text-secondary);
 }
-
-/* Botões de Ação */
-.btn-action {
-    border-radius: 50px;
-    padding: 15px;
+div[style*="justify-content: space-between"] a {
+    color: var(--accent-red) !important;
     font-weight: 600;
-    border: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-.btn-income { background: var(--accent-green); color: #1e1e2e; }
-.btn-expense { background: var(--accent-red); color: white; }
-
-/* Modais e Formulários */
-.modal-content {
+/* Box (Meta e Adicionar Lançamento) */
+.box {
     background-color: var(--card-bg);
-    color: white;
-    border-radius: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 25px;
 }
-.form-control, .form-select {
-    background-color: #1e1e2e;
-    border: 1px solid #2b3553;
+
+.box button[type="submit"] {
+    background-color: var(--accent-blue);
     color: white;
+    border: none;
+    padding: 10px 15px;
     border-radius: 10px;
-    padding: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
-.form-control:focus, .form-select:focus {
-    background-color: #1e1e2e;
+
+.box form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.box form[action*="definir_meta"] {
+    display: flex;
+    gap: 10px;
+}
+
+/* Resumo de Ganhos/Gastos/Saldo */
+.resumo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+.resumo .card {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    border: none;
+}
+.resumo h2 { font-weight: 800; margin: 5px 0 0 0; }
+.entrada { color: var(--accent-green); }
+.saida { color: var(--accent-red); }
+
+/* Barra de Progresso da Meta */
+.barra-fundo {
+    background-color: #34364a;
+    border-radius: 10px;
+    height: 30px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+.barra-progresso {
+    background: linear-gradient(90deg, #1d8cf8, var(--accent-blue));
     color: white;
-    box-shadow: none;
-    border-color: #1d8cf8;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    font-weight: 600;
+    min-width: 5%; /* Garante que o texto '0%' ou '5%' seja visível */
+    box-sizing: border-box;
+    transition: width 0.5s ease-in-out;
+}
+
+/* Tabela de Movimentações */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+    margin-top: 15px;
+}
+thead th {
+    color: var(--text-secondary);
+    padding-bottom: 10px;
+    font-weight: 600;
+    text-align: left;
+    border-bottom: 1px solid #2b3553;
+}
+tbody td {
+    background-color: var(--card-bg);
+    padding: 15px;
+    border: none;
+    font-weight: 500;
+}
+tbody tr {
+    transition: box-shadow 0.2s;
+}
+tbody tr:hover {
+    box-shadow: 0 0 15px rgba(29, 140, 248, 0.1);
+}
+tbody tr td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+tbody tr td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
+
+/* Responsividade */
+@media (max-width: 768px) {
+    body { padding: 10px; }
+    .resumo { grid-template-columns: 1fr; }
+    .box form { grid-template-columns: 1fr; }
+    .box form[action*="definir_meta"] { flex-direction: column; }
+    .box form[action*="definir_meta"] input { margin-bottom: 0; }
+    .box form[action*="definir_meta"] button { width: 100%; }
 }
