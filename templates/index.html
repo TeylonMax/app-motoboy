@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MotoCash App</title>
-    
+    <title>MotoCash Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -16,7 +15,7 @@
     
     <div class="header-profile">
         <div>
-            <span class="text-muted small">Olá,</span>
+            <span class="text-muted small">Piloto</span>
             <h4 class="m-0 fw-bold text-white">{{ nome.split()[0] }}</h4>
         </div>
         <div class="d-flex gap-3 align-items-center">
@@ -30,13 +29,10 @@
     <div id="view-home">
         <div class="balance-card">
             <div class="d-flex justify-content-between">
-                <span class="balance-label">Saldo do Dia</span>
+                <span class="balance-label">Saldo Líquido</span>
                 <i class="fab fa-cc-visa text-muted fs-4"></i>
             </div>
-            <div class="balance-value privacy-target">
-                R$ {{ saldo_dia | format_currency }}
-            </div>
-            
+            <div class="balance-value privacy-target">R$ {{ saldo_dia | format_currency }}</div>
             <div class="stats-row">
                 <div class="stat-item">
                     <small class="text-muted mb-1"><i class="fas fa-arrow-up text-success me-1"></i> Ganho</small>
@@ -46,6 +42,25 @@
                     <small class="text-muted mb-1"><i class="fas fa-arrow-down text-danger me-1"></i> Gasto</small>
                     <span class="fw-bold text-white privacy-target">{{ gasto_dia | format_currency }}</span>
                 </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mb-3">
+            <div class="stat-box-alt flex-grow-1 text-start" data-bs-toggle="modal" data-bs-target="#oleoModal" style="cursor: pointer;">
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted small"><i class="fas fa-wrench me-1"></i> Troca de Óleo</span>
+                    <i class="fas fa-chevron-right text-muted small"></i>
+                </div>
+                <div class="d-flex align-items-baseline mt-1">
+                    <h5 class="m-0 fw-bold {{ cor_oleo }}">{{ km_restante }} km</h5>
+                    <small class="text-muted ms-2" style="font-size: 0.7rem;">restantes</small>
+                </div>
+                <small class="{{ cor_oleo }} fw-bold" style="font-size: 0.75rem;">{{ status_oleo }}</small>
+            </div>
+            
+            <div class="stat-box-alt flex-grow-1 text-start">
+                <span class="text-muted small"><i class="fas fa-tachometer-alt me-1"></i> Odômetro</span>
+                <h5 class="m-0 fw-bold text-white mt-1">{{ km_atual }} km</h5>
             </div>
         </div>
 
@@ -61,17 +76,13 @@
                 <span class="text-muted">Atual: <b class="text-white">R$ {{ fat_dia | format_currency }}</b></span>
                 <span class="text-muted">Alvo: <b class="text-white">R$ {{ meta | format_currency }}</b></span>
             </div>
-            
-            <button class="btn btn-sm w-100 text-primary fw-bold" 
-                    style="background: rgba(99, 102, 241, 0.15); border: none; border-radius: 10px;" 
-                    data-bs-toggle="modal" data-bs-target="#metaModal">
+            <button class="btn btn-sm w-100 text-primary fw-bold btn-outline-custom" data-bs-toggle="modal" data-bs-target="#metaModal">
                 <i class="fas fa-sliders-h me-1"></i> Alterar Meta
             </button>
         </div>
 
         <div class="section-title">
-            <span>Extrato Recente</span>
-            <small class="text-muted fw-normal" style="font-size: 0.8rem;">Hoje</small>
+            <span>Extrato Hoje</span>
         </div>
 
         <div class="transaction-list pb-5">
@@ -79,20 +90,23 @@
             <div class="t-item">
                 <div class="d-flex align-items-center">
                     <div class="t-icon {{ 'bg-icon-up' if t.tipo == 'entrada' else 'bg-icon-down' }}">
-                        <i class="fas {{ 'fa-motorcycle' if t.tipo == 'entrada' else 'fa-shop' }}"></i>
+                        <i class="fas {{ 'fa-motorcycle' if t.tipo == 'entrada' else 'fa-gas-pump' if 'Gasolina' in t.descricao else 'fa-shop' }}"></i>
                     </div>
                     <div>
                         <span class="d-block fw-bold text-white" style="font-size: 0.95rem;">{{ t.descricao }}</span>
-                        <small class="text-muted" style="font-size: 0.75rem;">
-                            {{ t.data.split('-')[2] }}/{{ t.data.split('-')[1] }}
-                        </small>
+                        <div class="d-flex gap-2">
+                            <small class="text-muted" style="font-size: 0.75rem;">{{ t.data.split('-')[2] }}/{{ t.data.split('-')[1] }}</small>
+                            {% if t.litros %}
+                            <small class="text-info" style="font-size: 0.75rem;">{{ t.litros }}L</small>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 <div class="text-end">
                     <div class="fw-bold privacy-target {{ 'text-success' if t.tipo == 'entrada' else 'text-danger' }}">
                         {{ '+' if t.tipo == 'entrada' else '-' }} R$ {{ t.valor | format_currency }}
                     </div>
-                    <a href="{{ url_for('deletar', id=t.id) }}" class="text-muted opacity-50 small text-decoration-none ms-2" onclick="return confirm('Apagar este item?')">
+                    <a href="{{ url_for('deletar', id=t.id) }}" class="text-muted opacity-50 small text-decoration-none ms-2" onclick="return confirm('Apagar?')">
                         <i class="fas fa-trash-alt"></i>
                     </a>
                 </div>
@@ -107,12 +121,12 @@
     </div>
 
     <div id="view-stats" style="display: none;">
-        <h5 class="mb-4 fw-bold text-white">Desempenho Semanal</h5>
+        <h5 class="mb-4 fw-bold text-white">Relatórios</h5>
         <div class="card dashboard-card p-3 mb-4">
             <canvas id="graficoSemanal"></canvas>
         </div>
         
-        <div class="row g-2">
+        <div class="row g-2 mb-4">
             <div class="col-6">
                 <div class="stat-box-alt">
                     <span class="text-muted small">Faturamento Mês</span>
@@ -121,30 +135,30 @@
             </div>
             <div class="col-6">
                  <div class="stat-box-alt">
-                    <span class="text-muted small">Meta do Mês</span>
+                    <span class="text-muted small">Meta Mensal</span>
                     <h4 class="mt-1 text-white fw-bold">R$ {{ (meta * 30) | format_currency }}</h4>
                 </div>
             </div>
+        </div>
+
+        <div class="card dashboard-card p-3">
+            <h6 class="fw-bold mb-3"><i class="fas fa-file-export me-2 text-primary"></i>Exportar Dados</h6>
+            <p class="text-muted small">Baixe uma planilha completa com todas as suas corridas, abastecimentos e gastos.</p>
+            <a href="{{ url_for('exportar') }}" class="btn btn-primary w-100 fw-bold">
+                <i class="fas fa-download me-2"></i> Baixar Relatório (CSV)
+            </a>
         </div>
     </div>
 
 </div>
 
 <div class="bottom-nav">
-    <button class="nav-btn active" onclick="switchTab('home')" id="btn-home">
-        <i class="fas fa-home"></i>
-    </button>
-    
-    <button class="fab-add" data-bs-toggle="modal" data-bs-target="#addModal">
-        <i class="fas fa-plus"></i>
-    </button>
-    
-    <button class="nav-btn" onclick="switchTab('stats')" id="btn-stats">
-        <i class="fas fa-chart-pie"></i>
-    </button>
+    <button class="nav-btn active" onclick="switchTab('home')" id="btn-home"><i class="fas fa-home"></i></button>
+    <button class="fab-add" data-bs-toggle="modal" data-bs-target="#addModal"><i class="fas fa-plus"></i></button>
+    <button class="nav-btn" onclick="switchTab('stats')" id="btn-stats"><i class="fas fa-chart-pie"></i></button>
 </div>
 
-<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="addModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header border-0 pb-0">
@@ -174,6 +188,18 @@
                         <input type="number" name="valor" step="0.01" class="form-control form-control-lg fw-bold text-center input-valor" placeholder="0,00" required inputmode="decimal">
                     </div>
 
+                    <div id="camposGasolina" class="mb-3 p-3 rounded" style="background: rgba(255,255,255,0.05); display: none;">
+                        <label class="small text-warning mb-2 fw-bold"><i class="fas fa-gas-pump me-1"></i> Detalhes do Abastecimento</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="number" name="litros" step="0.01" class="form-control text-center" placeholder="Litros" inputmode="decimal">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" name="km_momento" class="form-control text-center" placeholder="KM Atual" inputmode="numeric">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <div id="chipsContainer" class="d-flex flex-wrap gap-2 justify-content-center"></div>
                     </div>
@@ -192,18 +218,35 @@
 <div class="modal fade" id="metaModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold text-white">Definir Meta Diária</h5>
+            <div class="modal-body p-4 text-center">
+                <h5 class="mb-3 text-white">Nova Meta Diária</h5>
+                <form action="{{ url_for('definir_meta') }}" method="POST">
+                    <input type="number" name="meta" step="0.01" value="{{ meta }}" class="form-control form-control-lg text-center mb-3 input-valor" required>
+                    <button type="submit" class="btn btn-primary w-100 btn-salvar">ATUALIZAR</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="oleoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-white">Controle de Óleo</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-4 text-center">
-                <form action="{{ url_for('definir_meta') }}" method="POST">
-                    <p class="text-muted small mb-3">Quanto você quer fazer por dia?</p>
-                    <div class="mb-4 position-relative">
-                         <span class="position-absolute text-muted" style="left: 15px; top: 18px;">R$</span>
-                        <input type="number" name="meta" step="0.01" value="{{ meta }}" class="form-control form-control-lg text-center input-valor" required inputmode="decimal">
+            <div class="modal-body p-4 pt-0 text-center">
+                <form action="{{ url_for('atualizar_km') }}" method="POST">
+                    <div class="mb-3 text-start">
+                        <label class="text-muted small">Odômetro Atual (KM)</label>
+                        <input type="number" name="km_atual" value="{{ km_atual }}" class="form-control fw-bold" required>
                     </div>
-                    <button type="submit" class="btn w-100 fw-bold py-3 text-white btn-salvar">ATUALIZAR META</button>
+                    <div class="mb-4 text-start">
+                        <label class="text-muted small">Trocar com (KM)</label>
+                        <input type="number" name="proxima_troca" value="{{ km_atual + km_restante }}" class="form-control fw-bold" required>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100 fw-bold text-dark">SALVAR KM</button>
                 </form>
             </div>
         </div>
