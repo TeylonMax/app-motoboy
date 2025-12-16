@@ -17,7 +17,7 @@
     <div class="header-profile">
         <div>
             <span class="text-muted small">Olá,</span>
-            <h4 class="m-0 fw-bold">{{ nome.split()[0] }}</h4>
+            <h4 class="m-0 fw-bold text-white">{{ nome.split()[0] }}</h4>
         </div>
         <div class="d-flex gap-3 align-items-center">
             <i class="fas fa-eye text-muted fs-5 cursor-pointer" id="eye-icon" onclick="togglePrivacy()"></i>
@@ -40,11 +40,11 @@
             <div class="stats-row">
                 <div class="stat-item">
                     <small class="text-muted mb-1"><i class="fas fa-arrow-up text-success me-1"></i> Ganho</small>
-                    <span class="fw-bold privacy-target">{{ fat_dia | format_currency }}</span>
+                    <span class="fw-bold text-white privacy-target">{{ fat_dia | format_currency }}</span>
                 </div>
                 <div class="stat-item">
                     <small class="text-muted mb-1"><i class="fas fa-arrow-down text-danger me-1"></i> Gasto</small>
-                    <span class="fw-bold privacy-target">{{ gasto_dia | format_currency }}</span>
+                    <span class="fw-bold text-white privacy-target">{{ gasto_dia | format_currency }}</span>
                 </div>
             </div>
         </div>
@@ -57,10 +57,16 @@
             <div class="progress">
                 <div class="progress-bar {{ cor_barra }}" role="progressbar" style="width: {{ largura_barra }}%"></div>
             </div>
-            <div class="d-flex justify-content-between small mt-2">
-                <span class="text-muted">Atual: R$ {{ fat_dia | format_currency }}</span>
-                <span class="text-white">Alvo: R$ {{ meta | format_currency }}</span>
+            <div class="d-flex justify-content-between small mt-2 mb-3">
+                <span class="text-muted">Atual: <b class="text-white">R$ {{ fat_dia | format_currency }}</b></span>
+                <span class="text-muted">Alvo: <b class="text-white">R$ {{ meta | format_currency }}</b></span>
             </div>
+            
+            <button class="btn btn-sm w-100 text-primary fw-bold" 
+                    style="background: rgba(99, 102, 241, 0.15); border: none; border-radius: 10px;" 
+                    data-bs-toggle="modal" data-bs-target="#metaModal">
+                <i class="fas fa-sliders-h me-1"></i> Alterar Meta
+            </button>
         </div>
 
         <div class="section-title">
@@ -76,7 +82,7 @@
                         <i class="fas {{ 'fa-motorcycle' if t.tipo == 'entrada' else 'fa-shop' }}"></i>
                     </div>
                     <div>
-                        <span class="d-block fw-bold" style="font-size: 0.95rem;">{{ t.descricao }}</span>
+                        <span class="d-block fw-bold text-white" style="font-size: 0.95rem;">{{ t.descricao }}</span>
                         <small class="text-muted" style="font-size: 0.75rem;">
                             {{ t.data.split('-')[2] }}/{{ t.data.split('-')[1] }}
                         </small>
@@ -86,7 +92,7 @@
                     <div class="fw-bold privacy-target {{ 'text-success' if t.tipo == 'entrada' else 'text-danger' }}">
                         {{ '+' if t.tipo == 'entrada' else '-' }} R$ {{ t.valor | format_currency }}
                     </div>
-                    <a href="{{ url_for('deletar', id=t.id) }}" class="text-secondary opacity-50 small text-decoration-none" onclick="return confirm('Apagar este item?')">
+                    <a href="{{ url_for('deletar', id=t.id) }}" class="text-muted opacity-50 small text-decoration-none ms-2" onclick="return confirm('Apagar este item?')">
                         <i class="fas fa-trash-alt"></i>
                     </a>
                 </div>
@@ -101,7 +107,7 @@
     </div>
 
     <div id="view-stats" style="display: none;">
-        <h5 class="mb-4 fw-bold">Desempenho Semanal</h5>
+        <h5 class="mb-4 fw-bold text-white">Desempenho Semanal</h5>
         <div class="card dashboard-card p-3 mb-4">
             <canvas id="graficoSemanal"></canvas>
         </div>
@@ -142,7 +148,7 @@
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold">Novo Lançamento</h5>
+                <h5 class="modal-title fw-bold text-white">Novo Lançamento</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body pt-3">
@@ -177,6 +183,27 @@
                     </div>
 
                     <button type="submit" class="btn w-100 fw-bold py-3 text-white btn-salvar">SALVAR</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="metaModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-white">Definir Meta Diária</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <form action="{{ url_for('definir_meta') }}" method="POST">
+                    <p class="text-muted small mb-3">Quanto você quer fazer por dia?</p>
+                    <div class="mb-4 position-relative">
+                         <span class="position-absolute text-muted" style="left: 15px; top: 18px;">R$</span>
+                        <input type="number" name="meta" step="0.01" value="{{ meta }}" class="form-control form-control-lg text-center input-valor" required inputmode="decimal">
+                    </div>
+                    <button type="submit" class="btn w-100 fw-bold py-3 text-white btn-salvar">ATUALIZAR META</button>
                 </form>
             </div>
         </div>
